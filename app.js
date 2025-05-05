@@ -17,7 +17,7 @@ document.getElementById("absenceForm").addEventListener("submit", async (e) => {
                 }),
                 headers: { 
                     "Content-Type": "application/json",
-                    "X-Azure-Functions-Key": "k4E62ZAkEayZc2mVjq85eGwtONaGOkFsJM1FcLK6OvDrAzFuwiGa1g=="
+                    "X-Azure-Functions-Key": "yPVGBRzdsjRFZ55qxIJKY60fW1VvUTaBCncKa-QFA2ddAzFugacuOQ=="
                 }
             }
         );

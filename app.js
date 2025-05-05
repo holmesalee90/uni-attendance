@@ -3,45 +3,55 @@ document.getElementById("absenceForm").addEventListener("submit", async (e) => {
     
     const responseMessage = document.getElementById("responseMessage");
     responseMessage.textContent = "Submitting...";
-    responseMessage.className = "";
+    responseMessage.className = "loading";
 
     try {
+        // Get form values
         const studentId = document.getElementById("studentId").value.trim();
         const reason = document.getElementById("reason").value.trim();
 
+        // Validate inputs
         if (!studentId || !reason) {
             throw new Error("Please fill in all fields");
         }
 
-        const functionUrl = "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2";
-        const functionKey = "YOUR_FUNCTION_KEY"; // Get from Azure Portal
+        // Your Azure Function details
+        const FUNCTION_URL = "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2";
+        const FUNCTION_KEY = "yPVGBRzdsjRFZ55qxIJKY60fW1VvUTaBCncKa-QFA2ddAzFugacuOQ==";
 
-        const response = await fetch(`${functionUrl}?code=${functionKey}`, {
+        // Make the request
+        const response = await fetch(`${FUNCTION_URL}?code=${FUNCTION_KEY}`, {
             method: "POST",
-            body: JSON.stringify({ studentId, reason }),
-            headers: { "Content-Type": "application/json" }
+            body: JSON.stringify({
+                studentId: studentId,
+                reason: reason
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            }
         });
 
-        // First check if response has content
-        const text = await response.text();
-        let data;
+        // Handle response
+        const responseText = await response.text();
+        let responseData;
         
         try {
-            data = text ? JSON.parse(text) : {};
-        } catch (e) {
-            console.warn("Response wasn't JSON:", text);
-            data = { message: text };
+            responseData = responseText ? JSON.parse(responseText) : {};
+        } catch {
+            responseData = { message: responseText };
         }
 
         if (!response.ok) {
-            throw new Error(data.message || `Request failed with status ${response.status}`);
+            throw new Error(responseData.message || `Request failed with status ${response.status}`);
         }
 
-        responseMessage.textContent = data.message || "Absence submitted successfully!";
+        // Success handling
+        responseMessage.textContent = responseData.message || "Absence submitted successfully!";
         responseMessage.className = "success";
         document.getElementById("absenceForm").reset();
 
     } catch (error) {
+        // Error handling
         console.error("Submission error:", error);
         responseMessage.textContent = `Error: ${error.message}`;
         responseMessage.className = "error";

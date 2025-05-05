@@ -1,29 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>University Attendance Form</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-    #responseMessage { padding: 10px; margin-top: 15px; border-radius: 4px; }
-    .success { background-color: #d4edda; color: #155724; }
-    .error { background-color: #f8d7da; color: #721c24; }
-  </style>
+    <title>Absence Form</title>
+    <style>
+        .loading { color: blue; }
+        .success { color: green; }
+        .error { color: red; }
+        #responseMessage { margin-top: 10px; }
+    </style>
 </head>
 <body>
-  <h1>University Attendance Form</h1>
-  <form id="absenceForm">
-    <label for="studentId">Student ID:</label>
-    <input type="text" id="studentId" required>
+    <h1>Absence Form</h1>
+    <form id="absenceForm">
+        <label>Student ID:</label>
+        <input type="text" id="studentId" required>
+        
+        <label>Reason:</label>
+        <textarea id="reason" required></textarea>
+        
+        <button type="submit">Submit</button>
+        <div id="responseMessage"></div>
+    </form>
     
-    <label for="reason">Reason for Absence:</label>
-    <textarea id="reason" rows="4" required></textarea>
-    
-    <button type="submit">Submit Absence</button>
-    <div id="responseMessage"></div>
-  </form>
-  
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

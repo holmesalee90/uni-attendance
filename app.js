@@ -8,7 +8,7 @@ document.getElementById("absenceForm").addEventListener("submit", async (e) => {
 
     try {
         const response = await fetch(
-            "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence?code=k4E62ZAkEayZc2mVjq85eGwtONaGOkFsJM1FcLK6OvDrAzFuwiGa1g==",
+            "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2?code=yPVGBRzdsjRFZ55qxIJKY60fW1VvUTaBCncKa-QFA2ddAzFugacuOQ==",
             {
                 method: "POST",
                 body: JSON.stringify({

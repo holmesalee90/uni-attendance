@@ -1,49 +1,46 @@
 document.getElementById("absenceForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    // Get form values
-    const studentId = document.getElementById("studentId").value;
-    const reason = document.getElementById("reason").value;
-
-    // Validate inputs
-    if (!studentId || !reason) {
-        alert("Please fill in all fields");
-        return;
-    }
-
+    // Show loading state
+    const responseMessage = document.getElementById("responseMessage");
+    responseMessage.textContent = "Submitting...";
+    responseMessage.className = "";
+    
     try {
-        const response = await fetch(
-            "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2",
-            {
-                method: "POST",
-                body: JSON.stringify({
-                    studentId: studentId,
-                    reason: reason
-                }),
-                headers: { 
-                    "Content-Type": "application/json"
-                }
-            }
-        );
+        const studentId = document.getElementById("studentId").value.trim();
+        const reason = document.getElementById("reason").value.trim();
+        
+        if (!studentId || !reason) {
+            throw new Error("Please fill in all fields");
+        }
+
+        // REPLACE WITH YOUR ACTUAL FUNCTION URL AND KEY
+        const functionUrl = "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2";
+        const functionKey = "YOUR_FUNCTION_KEY_HERE"; // Get from Azure Portal
+        
+        const response = await fetch(`${functionUrl}?code=${functionKey}`, {
+            method: "POST",
+            body: JSON.stringify({ studentId, reason }),
+            headers: { "Content-Type": "application/json" }
+        });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
         
-        // Display success message
-        document.getElementById("responseMessage").textContent = "Absence submitted successfully!";
-        document.getElementById("responseMessage").style.color = "green";
+        // Show success
+        responseMessage.textContent = "Absence submitted successfully!";
+        responseMessage.className = "success";
         
         // Reset form
         document.getElementById("absenceForm").reset();
         
     } catch (error) {
-        console.error("Submission failed:", error);
-        
-        // Display error message
-        document.getElementById("responseMessage").textContent = `Error: ${error.message}`;
-        document.getElementById("responseMessage").style.color = "red";
+        console.error("Error:", error);
+        responseMessage.textContent = `Error: ${error.message}`;
+        responseMessage.className = "error";
     }
 });

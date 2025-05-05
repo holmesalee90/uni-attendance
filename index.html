@@ -1,14 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>University Attendance Form</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    form { display: flex; flex-direction: column; gap: 15px; }
+    label { font-weight: bold; }
+    input, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+    #responseMessage { margin-top: 15px; padding: 10px; border-radius: 4px; }
+  </style>
+</head>
 <body>
   <h1>University Attendance Form</h1>
   <form id="absenceForm">
-    <label>Student ID:</label><br>
-    <input type="text" id="studentId" required><br>
-    <label>Reason:</label><br>
-    <textarea id="reason" required></textarea><br>
-    <button type="submit">Submit</button>
+    <label for="studentId">Student ID:</label>
+    <input type="text" id="studentId" required aria-required="true">
+    
+    <label for="reason">Reason for Absence:</label>
+    <textarea id="reason" rows="4" required aria-required="true"></textarea>
+    
+    <button type="submit">Submit Absence</button>
+    <div id="responseMessage" role="alert"></div>
   </form>
+  
   <script src="app.js"></script>
 </body>
 </html>

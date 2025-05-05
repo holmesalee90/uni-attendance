@@ -16,7 +16,7 @@ document.getElementById("absenceForm").addEventListener("submit", async (e) => {
 
         // REPLACE WITH YOUR ACTUAL FUNCTION URL AND KEY
         const functionUrl = "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2";
-        const functionKey = "YOUR_FUNCTION_KEY_HERE"; // Get from Azure Portal
+        const functionKey = "yPVGBRzdsjRFZ55qxIJKY60fW1VvUTaBCncKa-QFA2ddAzFugacuOQ=="; // Get from Azure Portal
         
         const response = await fetch(`${functionUrl}?code=${functionKey}`, {
             method: "POST",

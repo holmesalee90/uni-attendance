@@ -1,27 +1,177 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Absence Form</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Attendance System</title>
     <style>
-        .loading { color: blue; }
-        .success { color: green; }
-        .error { color: red; }
-        #responseMessage { margin-top: 10px; }
+        :root {
+            --primary: #4a6fa5;
+            --success: #4caf50;
+            --error: #f44336;
+            --loading: #2196f3;
+            --text-light: #f8f9fa;
+            --text-dark: #212529;
+            --border-radius: 6px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 40px;
+        }
+        
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            width: 100%;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        button:hover {
+            background-color: #3a5a8c;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        #responseMessage {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+            display: none;
+        }
+        
+        .loading {
+            display: block !important;
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border-left: 4px solid var(--loading);
+        }
+        
+        .success {
+            display: block !important;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid var(--success);
+        }
+        
+        .error {
+            display: block !important;
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 4px solid var(--error);
+        }
+        
+        .message-icon {
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin-top: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Absence Form</h1>
-    <form id="absenceForm">
-        <label>Student ID:</label>
-        <input type="text" id="studentId" required>
+    <div class="container">
+        <h1>Absence Reporting System</h1>
         
-        <label>Reason:</label>
-        <textarea id="reason" required></textarea>
-        
-        <button type="submit">Submit</button>
-        <div id="responseMessage"></div>
-    </form>
-    
+        <form id="absenceForm">
+            <div class="form-group">
+                <label for="studentId">Student ID</label>
+                <input type="text" id="studentId" required placeholder="Enter your student ID">
+            </div>
+            
+            <div class="form-group">
+                <label for="reason">Reason for Absence</label>
+                <textarea id="reason" required placeholder="Please provide details of your absence"></textarea>
+            </div>
+            
+            <button type="submit" id="submitBtn">
+                Submit Absence Request
+            </button>
+            
+            <div id="responseMessage"></div>
+        </form>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

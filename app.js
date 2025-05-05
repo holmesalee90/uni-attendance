@@ -1,8 +1,21 @@
 document.getElementById("absenceForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    // Show loading state
+    // Get form elements
+    const studentIdInput = document.getElementById("studentId");
+    const reasonInput = document.getElementById("reason");
     const submitBtn = document.querySelector('#absenceForm button[type="submit"]');
+    
+    // Validate inputs
+    const studentId = studentIdInput.value.trim();
+    const reason = reasonInput.value.trim();
+    
+    if (!studentId || !reason) {
+        alert("Please fill all fields!");
+        return;
+    }
+
+    // Set loading state
     submitBtn.disabled = true;
     submitBtn.textContent = "Submitting...";
 
@@ -12,8 +25,8 @@ document.getElementById("absenceForm").addEventListener("submit", async (e) => {
             {
                 method: "POST",
                 body: JSON.stringify({
-                    studentId: document.getElementById("studentId").value.trim(),
-                    reason: document.getElementById("reason").value.trim()
+                    studentId: studentId,
+                    reason: reason
                 }),
                 headers: { 
                     "Content-Type": "application/json",
@@ -23,18 +36,23 @@ document.getElementById("absenceForm").addEventListener("submit", async (e) => {
         );
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const error = await response.text();
+            throw new Error(error || "Request failed");
         }
 
         const result = await response.text();
-        alert(result || "Request submitted successfully!");
+        alert(result || "Attendance submitted successfully!");
+        
+        // Clear form on success
+        studentIdInput.value = "";
+        reasonInput.value = "";
         
     } catch (error) {
         console.error("Submission error:", error);
-        alert(`Failed to submit: ${error.message}`);
+        alert(`Error: ${error.message}`);
         
     } finally {
-        // Reset button state
+        // Reset button
         submitBtn.disabled = false;
         submitBtn.textContent = "Submit";
     }

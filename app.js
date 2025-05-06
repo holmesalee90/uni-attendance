@@ -2,59 +2,46 @@ document.getElementById("absenceForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     
     const responseMessage = document.getElementById("responseMessage");
-    const submitButton = document.querySelector("#absenceForm button[type='submit']");
-    
-    // Set loading state
-    responseMessage.textContent = "Submitting...";
+    responseMessage.innerHTML = "Submitting...";
     responseMessage.className = "loading";
-    submitButton.disabled = true;
 
     try {
-        // Get and validate form values
         const studentId = document.getElementById("studentId").value.trim();
         const reason = document.getElementById("reason").value.trim();
 
         if (!studentId || !reason) {
-            throw new Error("Please fill in all fields");
+            throw new Error("Please fill all fields");
         }
 
-        // Azure Function details
-        const FUNCTION_URL = "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2";
-        const FUNCTION_KEY = "yPVGBRzdsjRFZ55qxIJKY60fW1VvUTaBCncKa-QFA2ddAzFugacuOQ==";
-
-        // Make the request
-        const response = await fetch(`${FUNCTION_URL}?code=${FUNCTION_KEY}`, {
+        const response = await fetch('https://your-function-url.azurewebsites.net/api/ProcessAbsence2', {
             method: "POST",
-            body: JSON.stringify({ studentId, reason }),
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ studentId, reason })
         });
 
-        // Handle response
-        const result = await response.json();
-        
+        // First check if response exists
         if (!response.ok) {
-            throw new Error(result.message || "Submission failed");
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // Success handling
+        // Then parse JSON
+        const result = await response.json();
+
+        // Display success
         responseMessage.innerHTML = `
             <strong>Success!</strong><br>
-            ${result.message || "Absence recorded"}<br>
-            <small>Student ID: ${studentId}</small>
+            ${result.message}<br>
+            Student ID: ${studentId}
         `;
         responseMessage.className = "success";
-        document.getElementById("absenceForm").reset();
 
     } catch (error) {
-        // Error handling
+        // Display error
         responseMessage.innerHTML = `
             <strong>Error!</strong><br>
             ${error.message}
         `;
         responseMessage.className = "error";
-        console.error("Submission error:", error);
-        
-    } finally {
-        submitButton.disabled = false;
+        console.error("Error:", error);
     }
 });

@@ -1,89 +1,39 @@
-document.getElementById("absenceForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    
-    const responseMessage = document.getElementById("responseMessage");
-    const submitBtn = document.getElementById("submitBtn");
-    
-    // Clear previous messages and set loading state
-    responseMessage.innerHTML = `
-        <span class="message-icon">⏳</span>
-        <span>Submitting your absence request...</span>
-    `;
-    responseMessage.className = "loading";
-    responseMessage.style.display = "block";
-    submitBtn.disabled = true;
+document.getElementById('submitBtn').addEventListener('click', async () => {
+    const studentId = document.getElementById('studentId').value.trim();
+    const reason = document.getElementById('reason').value.trim();
+    const messageDiv = document.getElementById('message');
+
+    messageDiv.innerHTML = ''; // clear old messages
+
+    if (!studentId || !reason) {
+        messageDiv.innerHTML = `<div class="alert alert-warning">Please fill in all fields.</div>`;
+        return;
+    }
 
     try {
-        // 1. Get and validate form values
-        const studentId = document.getElementById("studentId").value.trim();
-        const reason = document.getElementById("reason").value.trim();
-
-        if (!studentId) {
-            throw new Error("Please enter your Student ID");
-        }
-        
-        if (!reason) {
-            throw new Error("Please provide a reason for your absence");
-        }
-
-        // 2. Call Azure Function
-        const API_URL = "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2";
-        
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({ 
-                studentId, 
-                reason 
-            })
+        const response = await fetch('https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ studentId, reason })
         });
 
-        // 3. Handle non-JSON responses
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            const text = await response.text();
-            throw new Error(text || "Invalid server response");
+        const contentType = response.headers.get('content-type');
+        if (!response.ok) {
+            throw new Error(`Server responded with status ${response.status}`);
         }
 
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-            throw new Error(result.message || "Submission failed");
+        if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            if (data.success) {
+                messageDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+            } else {
+                messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            }
+        } else {
+            throw new Error('Invalid server response: not JSON');
         }
-
-        // 4. Show success
-        responseMessage.innerHTML = `
-            <span class="message-icon">✅</span>
-            <div>
-                <strong>Success!</strong><br>
-                ${result.message}<br>
-                <small>Student ID: ${result.studentId}</small>
-            </div>
-        `;
-        responseMessage.className = "success";
-        
-        // Reset form after 3 seconds
-        setTimeout(() => {
-            document.getElementById("absenceForm").reset();
-        }, 3000);
-
-    } catch (error) {
-        // 5. Show user-friendly error
-        responseMessage.innerHTML = `
-            <span class="message-icon">❌</span>
-            <div>
-                <strong>Error!</strong><br>
-                ${error.message.replace("Error: ", "").replace("Database error: ", "")}
-            </div>
-        `;
-        responseMessage.className = "error";
-        
-        console.error("Full error details:", error);
-        
-    } finally {
-        submitBtn.disabled = false;
+    } catch (err) {
+        console.error(err);
+        messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${err.message}</div>`;
     }
 });

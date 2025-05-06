@@ -2,46 +2,88 @@ document.getElementById("absenceForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     
     const responseMessage = document.getElementById("responseMessage");
-    responseMessage.innerHTML = "Submitting...";
+    const submitBtn = document.getElementById("submitBtn");
+    
+    // Clear previous messages and set loading state
+    responseMessage.innerHTML = `
+        <span class="message-icon">⏳</span>
+        <span>Submitting your absence request...</span>
+    `;
     responseMessage.className = "loading";
+    responseMessage.style.display = "block";
+    submitBtn.disabled = true;
 
     try {
+        // 1. Get and validate form values
         const studentId = document.getElementById("studentId").value.trim();
         const reason = document.getElementById("reason").value.trim();
 
-        if (!studentId || !reason) {
-            throw new Error("Please fill all fields");
+        if (!studentId) {
+            throw new Error("Please enter your Student ID");
+        }
+        
+        if (!reason) {
+            throw new Error("Please provide a reason for your absence");
         }
 
-        const response = await fetch('https://your-function-url.azurewebsites.net/api/ProcessAbsence2', {
+        // 2. Call Azure Function
+        const API_URL = "https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2";
+        
+        const response = await fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ studentId, reason })
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ 
+                studentId, 
+                reason 
+            })
         });
 
-        // First check if response exists
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // 3. Handle non-JSON responses
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            const text = await response.text();
+            throw new Error(text || "Invalid server response");
         }
 
-        // Then parse JSON
         const result = await response.json();
 
-        // Display success
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Submission failed");
+        }
+
+        // 4. Show success
         responseMessage.innerHTML = `
-            <strong>Success!</strong><br>
-            ${result.message}<br>
-            Student ID: ${studentId}
+            <span class="message-icon">✅</span>
+            <div>
+                <strong>Success!</strong><br>
+                ${result.message}<br>
+                <small>Student ID: ${result.studentId}</small>
+            </div>
         `;
         responseMessage.className = "success";
+        
+        // Reset form after 3 seconds
+        setTimeout(() => {
+            document.getElementById("absenceForm").reset();
+        }, 3000);
 
     } catch (error) {
-        // Display error
+        // 5. Show user-friendly error
         responseMessage.innerHTML = `
-            <strong>Error!</strong><br>
-            ${error.message}
+            <span class="message-icon">❌</span>
+            <div>
+                <strong>Error!</strong><br>
+                ${error.message.replace("Error: ", "").replace("Database error: ", "")}
+            </div>
         `;
         responseMessage.className = "error";
-        console.error("Error:", error);
+        
+        console.error("Full error details:", error);
+        
+    } finally {
+        submitBtn.disabled = false;
     }
 });

@@ -11,7 +11,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     }
 
     try {
-        const response = await fetch('https://<yourapp>.azurewebsites.net/api/ProcessAbsence2?code=vI_oKEXvf1VvWl6HiEXFCyIdFut8Ted5rBiiEGccVlGeAzFuP24jvA==', {
+        const response = await fetch('https://uni-attendance-api-eastus-2.azurewebsites.net/api/ProcessAbsence2?code=vI_oKEXvf1VvWl6HiEXFCyIdFut8Ted5rBiiEGccVlGeAzFuP24jvA==', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ studentId, reason })

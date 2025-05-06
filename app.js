@@ -1,46 +1,39 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('absenceForm');
+document.getElementById('submitBtn').addEventListener('click', async () => {
+    const studentId = document.getElementById('studentId').value.trim();
+    const reason = document.getElementById('reason').value.trim();
     const messageDiv = document.getElementById('message');
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    messageDiv.innerHTML = ''; // clear old messages
 
-        const studentId = document.getElementById('studentId').value.trim();
-        const reason = document.getElementById('reason').value.trim();
+    if (!studentId || !reason) {
+        messageDiv.innerHTML = `<div class="alert alert-warning">Please fill in all fields.</div>`;
+        return;
+    }
 
-        messageDiv.textContent = '';
-        messageDiv.style.display = 'none';
+    try {
+        const response = await fetch('https://<yourapp>.azurewebsites.net/api/ProcessAbsence2?code=vI_oKEXvf1VvWl6HiEXFCyIdFut8Ted5rBiiEGccVlGeAzFuP24jvA==', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ studentId, reason })
+        });
 
-        if (!studentId || !reason) {
-            messageDiv.textContent = 'Please enter both Student ID and Reason.';
-            messageDiv.style.display = 'block';
-            messageDiv.style.color = 'red';
-            return;
+        const contentType = response.headers.get('content-type');
+        if (!response.ok) {
+            throw new Error(`Server responded with status ${response.status}`);
         }
 
-        try {
-            const response = await fetch('https://<yourapp>.azurewebsites.net/api/ProcessAbsence2?code=vI_oKEXvf1VvW6HiEFXCYldFdut8TedSrBiiEGcclVGeAzFuP24jvA==', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ studentId, reason })
-            });
-
+        if (contentType && contentType.includes('application/json')) {
             const data = await response.json();
-
-            if (response.ok && data.success) {
-                messageDiv.textContent = data.message || 'Absence submitted successfully.';
-                messageDiv.style.display = 'block';
-                messageDiv.style.color = 'green';
+            if (data.success) {
+                messageDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
             } else {
-                messageDiv.textContent = data.message || `Error: Server responded with status ${response.status}`;
-                messageDiv.style.display = 'block';
-                messageDiv.style.color = 'red';
+                messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
             }
-        } catch (error) {
-            messageDiv.textContent = 'Error: ' + error.message;
-            messageDiv.style.display = 'block';
-            messageDiv.style.color = 'red';
-            console.error('Request error:', error);
+        } else {
+            throw new Error('Invalid server response: not JSON');
         }
-    });
+    } catch (err) {
+        console.error(err);
+        messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${err.message}</div>`;
+    }
 });
